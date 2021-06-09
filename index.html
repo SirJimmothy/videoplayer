@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Video Player</title>
+	<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+	<style>
+
+		body { margin: 0; padding: 0; font-size: 16px; }
+
+		div#body { position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 75%; height: 75%; margin: auto; padding: 10px; border: 1em inset #FF0000; }
+
+		div.videoplayer { width: 500px; border: 1px solid #0000FF; }
+
+	</style>
+	<script src="videoplayer.js"></script>
+</head>
+<body>
+
+<div id="body">
+
+	<div class="videoplayer" data-autofocus="true"><video><source src="media.mp4" type="video/mp4" /></video></div>
+
+</div>
+
+</body>
+</html>
