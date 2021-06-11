@@ -82,7 +82,7 @@ function load() {
 	for (let x = 0; x < css_rules.length; x++) { css.insertRule(css_rules[x],css.cssRules.length); }
 
 	// Global events
-	document.addEventListener('mousedown',	(e) => { body_mouse(e); });
+	document.addEventListener('mousedown',	() => { body_mouse(); });
 	document.addEventListener('keydown',		(e) => { keydown(e); });
 
 	// Per-player routines
@@ -192,7 +192,7 @@ function load() {
 
 } // function load() {
 
-function body_mouse(e) {
+function body_mouse() {
 	let players = document.querySelectorAll('div.' + config.class);
 	for (let x = 0; x < players.length; x++) {
 		hide_menu(players[x]);
