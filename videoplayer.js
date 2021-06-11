@@ -543,7 +543,7 @@ function page_load(item) {
 
 function get_player_id(player) {
 	let players = document.querySelectorAll('div.' + config.class);
-	for (x = 0; x < players.length; x++) {
+	for (let x = 0; x < players.length; x++) {
 		if (players[x] === player) { break; }
 	}
 	return x;
