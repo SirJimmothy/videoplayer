@@ -40,8 +40,8 @@ function load() {
 		div_main + ' > div.overlay { z-index: 1; position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100px; height: 100px; margin: auto; border-radius: 100px; opacity: 0; filter: opacity(0%); text-align: center; color: #FFFFFF; background: url("icons.png") 0 0 no-repeat #666666; pointer-events: none; transition: opacity 0.1s linear 0s; }',
 		div_main + ' > div.overlay.visible { opacity: 0.75; filter: opacity(75%); transition-delay: 0s; }',
 
-		div_main + ' > div.controls { display: flex; flex-flow: row; position: absolute; bottom: 0; left: 0; width: 100%; height: 30px; font-size: 12px; color: #FFFFFF; background-color: #333333; transition: bottom 0.1s linear 0s; }',
-		div_main + '.hidden > div.controls { bottom: -30px; }',
+		div_main + ' > div.controls { display: flex; flex-flow: row; position: absolute; bottom: 2px; left: 0; width: 100%; height: 30px; font-size: 12px; color: #FFFFFF; background-color: #333333; transition: all 0.1s linear 0s; }',
+		div_main + '.hidden > div.controls { opacity: 0; filter: opacity(0%); transition-duration: 0.5s; }',
 
 		div_main + ' > div.controls > div { position: relative; flex: 0 0 auto; width: 30px; height: 30px; }',
 		div_main + ' > div.controls > div.play { background: url("icons.png") 0 -100px no-repeat; cursor: pointer; }',
