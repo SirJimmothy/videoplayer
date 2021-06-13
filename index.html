@@ -9,7 +9,12 @@
 
 		div#body { padding: 10px; text-align: center; }
 
-		div.videoplayer { display: inline-block; width: 650px; margin: 2em 5em; }
+		div.videoplayer { display: inline-block; width: 650px; margin: 2em; }
+
+		div.videoplayer#video1 { vertical-align: top; }
+		div.videoplayer#video2 { width: auto; height: 650px; }
+		div.videoplayer#video3 { width: auto; height: 650px; }
+		div.videoplayer#video4 { vertical-align: top; }
 
 	</style>
 	<script src="videoplayer.js"></script>
@@ -18,10 +23,10 @@
 
 <div id="body">
 
-	<div class="videoplayer" data-autofocus="true"><video><source src="media.mp4" type="video/mp4" /></video></div>
-	<div class="videoplayer"><video><source src="media.mp4" type="video/mp4" /></video></div>
-	<div class="videoplayer"><video><source src="media.mp4" type="video/mp4" /></video></div>
-	<div class="videoplayer"><video><source src="media.mp4" type="video/mp4" /></video></div>
+	<div id="video1" class="videoplayer" data-autofocus="true"><video><source src="video1.mp4" type="video/mp4" /></video></div>
+	<div id="video2" class="videoplayer"><video><source src="video2.mp4" type="video/mp4" /></video></div>
+	<div id="video3" class="videoplayer"><video><source src="video3.mp4" type="video/mp4" /></video></div>
+	<div id="video4" class="videoplayer"><video><source src="video4.mp4" type="video/mp4" /></video></div>
 
 </div>
 
