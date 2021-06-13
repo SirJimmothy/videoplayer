@@ -185,6 +185,7 @@ function load() {
 
 		// Update timers
 		setInterval(() => {
+
 			update_menu(players[x]);
 			players[x].childNodes[2].childNodes[page.elements['time1']].innerHTML = timeify(video.currentTime,video.duration);
 
@@ -202,6 +203,11 @@ function load() {
 			let vol_slider = players[x].childNodes[2].childNodes[page.elements['vol_slider']];
 			size = vol_slider.getBoundingClientRect();
 			vol_slider.childNodes[0].style.width = ((size.width - 4) * video.volume) + 'px';
+
+			if (video.paused && video.currentTime === video.duration) {
+				set_controls(players[x],true);
+				document.body.classList.remove('nocursor');
+			}
 
 		},config.interval);
 
