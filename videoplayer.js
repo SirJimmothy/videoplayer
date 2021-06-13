@@ -3,7 +3,7 @@ let config = {
 	'class':		'videoplayer',
 	'controls':	['play','time1','slider','time2','volume','vol_slider','full'],
 	'cookie':		'videoplayer_',
-	'hide':			2000,
+	'hide':			3000,
 	'interval':	100,
 };
 
@@ -21,10 +21,7 @@ let menu_items = {
 	'full':	['Fullscreen','Exit Fullscreen'],
 };
 
-let speeds = [0.25,0.5,0.75,1,1.25,1.5,1.75,2];
-
 let mouse = [];
-let downkeys = {};
 
 page_load(load);
 
@@ -40,9 +37,6 @@ function load() {
 		'@font-face { font-family: "fixed"; src: url("inconsolata-regular.ttf"); }',
 
 		div_main + ' { z-index: 0; position: relative; overflow: visible; font-family: fixed, monospace; user-select: none; }',
-
-		div_main + ' > video { width: 100%; height: 100%; }',
-
 		div_main + ' > div.overlay { z-index: 1; position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100px; height: 100px; margin: auto; border-radius: 100px; opacity: 0; filter: opacity(0%); text-align: center; color: #FFFFFF; background: url("icons.png") 0 0 no-repeat #666666; pointer-events: none; transition: opacity 0.1s linear 0s; }',
 		div_main + ' > div.overlay.visible { opacity: 0.75; filter: opacity(75%); transition-delay: 0s; }',
 
@@ -62,12 +56,13 @@ function load() {
 
 		div_main + ' > div.controls > div.volume { background: url("icons.png") -60px -100px no-repeat; cursor: pointer; }',
 		div_main + ' > div.controls > div.volume.mute { background-position: -90px -100px; }',
-		div_main + ' > div.controls > div.vol_slider { top: 10px; margin: 0 0.5em 0 0.5em; width: 70px; height: 10px; border: 2px solid #222222; border-width: 0 2px; border-radius: 2em; background-color: #222222; cursor: grab; }',
-		div_main + ' > div.controls > div.vol_slider > span { display: block; position: absolute; top: -0.5em; left: -0.5em; width: 100%; height: 10px; border: 0.5em solid #333333; border-radius: 2em;  background-color: #999999; transition: width 0.1s linear 0s; content: ""; pointer-events: none; }',
-		div_main + ' > div.controls > div.vol_slider > span:before { position: absolute; top: -3px; right: -8px; width: 16px; height: 16px; border-radius: 100%; background-color: #EEEEEE; content: ""; }',
+		div_main + ' > div.controls > div.vol_slider { top: 10px; margin: 0 0.5em 0 0; width: 80px; height: 10px; border: 2px solid #222222; border-width: 0 2px; border-radius: 2em; background-color: #222222; cursor: pointer; }',
+		div_main + ' > div.controls > div.vol_slider > span { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 10px; border-radius: 2em;  background-color: #999999; transition: width 0.1s linear 0s; content: ""; pointer-events: none; }',
 
 		div_main + ' > div.controls > div.full { background: url("icons.png") -120px -100px no-repeat; cursor: pointer; }',
 		div_main + ':fullscreen > div.controls > div.full { background-position: -150px -100px; }',
+
+		div_main + ' > video { width: 100%; height: 100%; cursor: pointer; }',
 
 		div_main + ' > ul { display: none; position: absolute; top: 30px; left: 30px; list-style-type: none; margin: 0; padding: 0.25em; background-color: rgba(51,51,51,0.75); }',
 		div_main + ' > ul li { position: relative; margin: 0; padding: 0.25em 1em 0.25em 1.75em; text-align: left; color: #FFFFFF; cursor: pointer; }',
@@ -89,7 +84,6 @@ function load() {
 	// Global events
 	document.addEventListener('mousedown',	() => { body_mouse(); });
 	document.addEventListener('keydown',		(e) => { keydown(e); });
-	document.addEventListener('keyup',			(e) => { keyup(e); });
 
 	// Per-player routines
 	let players = document.querySelectorAll('div.' + config.class);
@@ -323,14 +317,13 @@ function keydown(e) {
 	let target = e.target;
 	let keyid = e.which;
 	let player = get_player(target);
-	downkeys[keyid] = true;
 
 	if (player) {
 
 		let video = player.childNodes[0];
 		let show;
 		let current = video.currentTime;
-		if (in_array(keyid,[27,32,37,38,39,40,70,77,188,190])) {
+		if (in_array(keyid,[27,32,37,38,39,40,70,77])) {
 			e.preventDefault();
 			switch (keyid) {
 				case 27: // Esc
@@ -357,29 +350,10 @@ function keydown(e) {
 				break;
 				case 70: // F
 					toggle_fullscreen(player);
+					console.log('F');
 				break;
 				case 77: // M
 					toggle_mute(player);
-				break;
-				case 188: case 190: // < and >
-					if (downkeys[16]) {
-						let index = -1;
-						for (let x = 0; x < speeds.length; x++) {
-							if (parseFloat(video.playbackRate) === speeds[x]) {
-								index = x;
-								break;
-							}
-						}
-						if (index > -1) {
-							index += (keyid === 188 ? -1 : 1);
-							if (index < 0) {
-								index = 0;
-							} else if (index === speeds.length) {
-								index = speeds.length - 1;
-							}
-							video.playbackRate = speeds[index];
-						}
-					}
 				break;
 			}
 			video.volume = video.volume.toFixed(2);
@@ -387,11 +361,6 @@ function keydown(e) {
 		}
 	} // if (player) {
 
-}
-
-function keyup(e) {
-	let keyid = e.which;
-	downkeys[keyid] = false;
 }
 
 function overlay(choice,player) {
@@ -466,7 +435,7 @@ function set_time(player,x_pos,visual = false) {
 function set_volume(player,x_pos) {
  	let video = player.childNodes[0];
 	let size = player.childNodes[2].childNodes[page.elements['vol_slider']].getBoundingClientRect();
-	let vol = ((x_pos - size.x) - 8) / (size.width - 16);
+	let vol = (x_pos - size.x) / size.width;
 	video.volume = (vol < 0 ? 0 : (vol > 1 ? 1 : vol));
 	do_cookie('set','volume',video.volume);
 }
