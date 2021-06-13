@@ -77,6 +77,9 @@ function load() {
 
 		div_main + ' > ul.show { display: block; }',
 
+		div_main + ' > div.title { position: absolute; top: 0; left: 0; width: calc(100% - 1em); padding: 0.5em; text-align: left; color: #FFFFFF; background-color: rgba(51,51,51,0.5); transition: all 0.1s linear 0s; }',
+		div_main + '.hidden > div.title { opacity: 0; filter: opacity(0%); transition-duration: 0.5s; }',
+
 		'body.nocursor ' + div_main + ' > video { cursor: none; }',
 
 		div_main + ':fullscreen > video { width: 100%; height: 100%; }',
@@ -166,6 +169,14 @@ function load() {
 			menu.appendChild(li);
 		} }
 		if (menu.childNodes.length) { players[x].appendChild(menu); }
+
+		let video_title = players[x].getAttribute('data-title');
+		if (video_title) {
+			let title = document.createElement('DIV');
+			title.className = 'title';
+			title.innerHTML = video_title;
+			players[x].appendChild(title);
+		}
 
 		// Give focus if requested
 		if (players[x].getAttribute('data-autofocus') === 'true') {
@@ -378,6 +389,7 @@ function keydown(e) {
 								index = speeds.length - 1;
 							}
 							video.playbackRate = speeds[index];
+							overlay(speeds[index] + 'x',player);
 						}
 					}
 				break;
@@ -398,7 +410,10 @@ function overlay(choice,player) {
 	let overlay = player.childNodes[1];
 	let value = overlay.style.getPropertyValue('background-position');
 
-	let choices = ['play','pause','vol_up','vol_down','mute','vol_max','skip_left','skip_right'];
+	let choices = [
+		'play','pause','vol_up','vol_down','mute','vol_max','skip_left','skip_right',
+		'0.25x','0.5x','0.75x','1x','1.25x','1.5x','1.75x','2x'
+	];
 	for (let x = 0; x < choices.length; x++) {
 		if (choice === choices[x]) {
 			value = (x * -100) + 'px  0px';
@@ -407,7 +422,7 @@ function overlay(choice,player) {
 
 	overlay.classList.add('visible');
 	overlay.style.backgroundPosition = value;
-	setTimeout(() => { overlay.classList.remove('visible'); },200);
+	setTimeout(() => { overlay.classList.remove('visible'); },250);
 
 }
 
@@ -427,6 +442,7 @@ function toggle_play(e) {
 		set_controls(player,true);
 		do_timer(e,'reset');
 	}
+	console.log(video);
 }
 
 function toggle_fullscreen(player) {
@@ -574,10 +590,11 @@ function page_load(item) {
 
 function get_player_id(player) {
 	let players = document.querySelectorAll('div.' + config.class);
+	let index;
 	for (let x = 0; x < players.length; x++) {
-		if (players[x] === player) { break; }
+		if (players[x] === player) { index = x; break; }
 	}
-	return x;
+	return index;
 }
 
 function show_menu(e) {
