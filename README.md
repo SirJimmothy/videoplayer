@@ -3,7 +3,7 @@ Lightweight video wrapper with customisable and reorderable controls
 
 ## Basic usage:
 
-Simply include the javascript file as follows:
+Simply include the JavaScript file as follows:
 
 ```html
 <script src="https://sirjimmothy.github.io/videoplayer/videoplayer.js" />
@@ -14,6 +14,8 @@ and wrap video elements (all arguments removed)  as follows:
 <div class="videoplayer"><video><source src="video1.mp4" type="video/mp4" /></video></div>
 ```
 
+All inages and icons are encoded within the JavaScript CSS definitions to remove the need for additional dependencies.
+
 The following data attributes may also be added for additional functionality:
 
 Argument | Description
@@ -22,6 +24,7 @@ data-title="Video Title" | Title of the video. Appears at the top of the player
 data-autofocus="true" | Whether to automatically focus the video, allowing keyboard shortcuts to be used immediately
 data-autoplay="true" | Whether to automatically play the video upon page load. If the site is not trusted for autoplay, the video is muted and a second autoplay request sent
 data-bgcolor="#000000" | The background colour of the wrapper. Defaults to transparent
+data-help="true" | Whether to display a help icon on the video to assist with keyboard controls
 
 ## Customisation:
 
