@@ -28,7 +28,7 @@ If you've made your own copy of the videoplayer.js file, you can modify the conf
 
 Object | Description
 ------ | ------
-class | The class name to monitor for selecting videos to wrap
+class | The class name to monitor to select videos to wrap
 controls | The entries in this array may be reordered to customise the wrappers to your requirements
 cookie | The script will remember the previous volume set for the domain, held in a cooke with the prefix defined here
 hide | How long before the overlay should be auto-hidden after no mouse movement when unpaused
