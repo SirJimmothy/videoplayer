@@ -243,7 +243,7 @@ function load() {
 			players[x].style.backgroundColor = players[x].getAttribute('data-bgcolor');
 		}
 
-		// Update timers
+		// Timers
 		setInterval(() => {
 
 			update_menu(players[x]);
@@ -254,15 +254,19 @@ function load() {
 			slider.childNodes[0].style.width = ((size.width - 8) / video.duration) * video.currentTime + 'px';
 
 			let volume = players[x].childNodes[2].childNodes[page.elements['volume']];
-			if (video.volume) {
-				volume.classList.remove('mute');
-			} else {
+			if (!video.volume || video.muted) {
 				volume.classList.add('mute');
+			} else {
+				volume.classList.remove('mute');
 			}
 
 			let vol_slider = players[x].childNodes[2].childNodes[page.elements['vol_slider']];
-			size = vol_slider.getBoundingClientRect();
-			vol_slider.childNodes[0].style.width = ((size.width - 4) * video.volume) + 'px';
+			if (video.muted) {
+				vol_slider.childNodes[0].style.width = 0;
+			} else {
+				size = vol_slider.getBoundingClientRect();
+				vol_slider.childNodes[0].style.width = ((size.width - 4) * video.volume) + 'px';
+			}
 
 			if (video.paused && video.currentTime === video.duration) {
 				set_controls(players[x],true);
@@ -480,26 +484,6 @@ function keyup(e) {
 	downkeys[keyid] = false;
 }
 
-function overlay(choice,player) {
-	let overlay = player.childNodes[1];
-	let value = overlay.style.getPropertyValue('background-position');
-
-	let choices = [
-		'play','pause','vol_up','vol_down','mute','vol_max','skip_left','skip_right',
-		'0.25x','0.5x','0.75x','1x','1.25x','1.5x','1.75x','2x'
-	];
-	for (let x = 0; x < choices.length; x++) {
-		if (choice === choices[x]) {
-			value = (x * -100) + 'px  0px';
-		}
-	}
-
-	overlay.classList.add('visible');
-	overlay.style.backgroundPosition = value;
-	setTimeout(() => { overlay.classList.remove('visible'); },250);
-
-}
-
 ////////////////////////
 //  Player functions  //
 ////////////////////////
@@ -532,7 +516,8 @@ function toggle_fullscreen(player) {
 
 function toggle_mute(player) {
 	let video = player.childNodes[0];
-	video.volume = (video.volume ? 0 : page.volume[get_player_id(player)]);
+	video.muted = !video.muted;
+	overlay(video.muted ? 'mute' : 'vol_max',player);
 }
 
 function get_player(elem) {
@@ -676,6 +661,25 @@ function get_player_id(player) {
 		if (players[x] === player) { index = x; break; }
 	}
 	return index;
+}
+
+function overlay(choice,player) {
+	let overlay = player.childNodes[1];
+	let value = overlay.style.getPropertyValue('background-position');
+
+	let choices = [
+		'play','pause','vol_up','vol_down','mute','vol_max','skip_left','skip_right',
+		'0.25x','0.5x','0.75x','1x','1.25x','1.5x','1.75x','2x'
+	];
+	for (let x = 0; x < choices.length; x++) {
+		if (choice === choices[x]) {
+			value = (x * -100) + 'px  0px';
+		}
+	}
+
+	overlay.classList.add('visible');
+	overlay.style.backgroundPosition = value;
+	setTimeout(() => { overlay.classList.remove('visible'); },250);
 }
 
 function show_menu(e) {
