@@ -1,4 +1,4 @@
-# videoplayer
+# Lightweight Video Wrapper
 Lightweight video wrapper with customisable and reorderable controls
 
 ## Basic usage:
