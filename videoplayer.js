@@ -21,6 +21,15 @@ let menu_items = {
 	'full':	['Fullscreen','Exit Fullscreen'],
 };
 
+let help = [
+	'Pause: Space',
+	'Fullscreen: F',
+	'Mute: M',
+	'Volume: Up / Down',
+	'5s jump: &laquo; &raquo;',
+	'Speed: Shift &amp; , .',
+];
+
 let speeds = [0.25,0.5,0.75,1,1.25,1.5,1.75,2];
 
 let mouse = [];
@@ -41,7 +50,7 @@ function load() {
 
 		div_main + ' { z-index: 0; position: relative; overflow: visible; min-width: 350px; font-family: fixed, monospace; user-select: none; }',
 
-		div_main + ' > video { width: 100%; height: 100%; }',
+		div_main + ' > video { width: 100%; height: 100%; margin: 0; padding: 0; border: 0; outline: 0; }',
 
 		div_main + ' > div.overlay { z-index: 1; position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100px; height: 100px; margin: auto; border-radius: 100px; opacity: 0; filter: opacity(0%); text-align: center; color: #FFFFFF; background: url("icons.png") 0 0 no-repeat #666666; pointer-events: none; transition: opacity 0.1s linear 0s; }',
 		div_main + ' > div.overlay.visible { opacity: 0.75; filter: opacity(75%); transition-delay: 0s; }',
@@ -77,8 +86,15 @@ function load() {
 
 		div_main + ' > ul.show { display: block; }',
 
-		div_main + ' > div.title { position: absolute; top: 0; left: 0; width: calc(100% - 1em); padding: 0.5em; text-align: left; color: #FFFFFF; background-color: rgba(51,51,51,0.5); transition: all 0.1s linear 0s; }',
+		div_main + ' > div.title { position: absolute; top: 0; left: 0; width: calc(100% - 1em); padding: 0.5em; text-align: left; font-size: 16px; font-weight: bold; color: #FFFFFF; background-color: rgba(51,51,51,0.5); transition: all 0.1s linear 0s; }',
 		div_main + '.hidden > div.title { opacity: 0; filter: opacity(0%); transition-duration: 0.5s; }',
+
+		div_main + ' > div.help { position: absolute; top: 1px; right: 1px; width: 30px; height: 30px; font-size: 14px; background: url("icons.png") -180px -100px no-repeat; cursor: help; opacity: 1; filter: opacity:(100%); transition: all 0.1s linear 0s; }',
+		div_main + ' > div.help > ul { display: none; position: absolute; top: 32px; right: 0; list-style-type: none; width: 150px; margin: 0; padding: 0; background-color: rgba(51,51,51,0.5); }',
+		div_main + ' > div.help > ul > li { margin: 0; padding: 0.25em 0.5em; text-align: left; color: #FFFFFF; }',
+
+		div_main + '.hidden > div.help { opacity: 0; filter: opacity(0%); }',
+		div_main + ' > div.help:hover > ul { display: block; }',
 
 		'body.nocursor ' + div_main + ' > video { cursor: none; }',
 
@@ -101,10 +117,10 @@ function load() {
 
 		// Set container size to match video ratio
 		let player_size = players[x].getBoundingClientRect();
-		if (players[x].style.width && video.videoWidth > video.videoHeight) { // Landscape video
+		if (video.videoWidth > video.videoHeight) { // Landscape video
 			players[x].style.height = video.videoHeight * (player_size.width / video.videoWidth) + 'px';
-		} else if (players[x].style.height) { // Vertical or square video
-			players[x].style.height = video.videoWidth * (player_size.height / video.videoHeight) + 'px';
+		} else { // Vertical or square video
+			players[x].style.width = video.videoWidth * (player_size.height / video.videoHeight) + 'px';
 		}
 
 		let cookie_vol = parseFloat(do_cookie('get','volume'));
@@ -122,6 +138,7 @@ function load() {
 		players[x].setAttribute('tabindex',100 + x);
 		players[x].removeAttribute('controls');
 
+		// Define player-level listeners
 		players[x].addEventListener('mousedown',	(e) => { mousedown(e); });
 		players[x].addEventListener('mouseup',		(e) => { mouseup(e); });
 		players[x].addEventListener('mousemove',	(e) => { mousemove(e); });
@@ -129,11 +146,13 @@ function load() {
 		players[x].addEventListener('dblclick',		(e) => { dblclick(e); });
 		players[x].addEventListener('contextmenu',(e) => { contextmenu(e); });
 
+		// Information overlay (play, pause etc)
 		let overlay = document.createElement('DIV');
 		overlay.className = 'overlay';
 		overlay.innerHTML = '';
 		players[x].appendChild(overlay);
 
+		// Controls bar
 		let controls = document.createElement('DIV');
 		controls.className = 'controls';
 
@@ -178,6 +197,7 @@ function load() {
 		} }
 		if (menu.childNodes.length) { players[x].appendChild(menu); }
 
+		// Video Title if specified
 		let video_title = players[x].getAttribute('data-title');
 		if (video_title) {
 			let title = document.createElement('DIV');
@@ -186,17 +206,38 @@ function load() {
 			players[x].appendChild(title);
 		}
 
-		// Give focus if requested
+		// Help icon, if specified
+		if (players[x].getAttribute('data-help') === 'true') {
+			let icon_help = document.createElement('DIV');
+			icon_help.className = 'help';
+
+			let help_list = document.createElement('UL');
+			for (let y = 0; y < help.length; y++) {
+				let li = document.createElement('LI');
+				li.innerHTML = help[y];
+				help_list.appendChild(li);
+			}
+			icon_help.appendChild(help_list);
+
+			players[x].appendChild(icon_help);
+		}
+
+		// Give focus if specified
 		if (players[x].getAttribute('data-autofocus') === 'true') {
 			players[x].childNodes[0].focus();
 		}
 
-		// Autoplay if requested
+		// Autoplay if specified
 		if (players[x].getAttribute('data-autoplay') === 'true') {
 			players[x].childNodes[0].play().then().catch(() => {
 				set_volume(players[x],0);
 				players[x].childNodes[0].play().then();
 			});
+		}
+
+		// Set background if specified
+		if (players[x].getAttribute('data-bgcolor')) {
+			players[x].style.backgroundColor = players[x].getAttribute('data-bgcolor');
 		}
 
 		// Update timers
@@ -230,6 +271,10 @@ function load() {
 	}
 
 } // function load() {
+
+////////////////////////
+//   Mouse functions  //
+////////////////////////
 
 function body_mouse() {
 	let players = document.querySelectorAll('div.' + config.class);
@@ -352,6 +397,10 @@ function dblclick(e) {
 	}
 }
 
+////////////////////////
+// Keyboard functions //
+////////////////////////
+
 function keydown(e) {
 	let target = e.target;
 	let keyid = e.which;
@@ -448,6 +497,10 @@ function overlay(choice,player) {
 
 }
 
+////////////////////////
+//  Player functions  //
+////////////////////////
+
 function toggle_play(e) {
 	let target = e.target;
 	let player = get_player(target);
@@ -512,6 +565,19 @@ function set_controls(player,show) {
  	if (show) { player.classList.remove('hidden'); } else { player.classList.add('hidden'); }
 }
 
+////////////////////////
+//  Utility functions //
+////////////////////////
+
+function page_load(item) {
+	let load = window.onload;
+	if (typeof load == 'function') {
+		window.onload = function() { if (load) { load(); } item(); };
+	} else {
+		window.onload = item;
+	}
+}
+
 function in_array(needle,haystack,separator = ' ') {
 	// Important: Leave separator default as space; allows for use checking classes
 	let output = false;
@@ -522,6 +588,25 @@ function in_array(needle,haystack,separator = ' ') {
 		if (haystack[x] === needle) { output = true; break; }
 	}
 	return output;
+}
+
+function do_cookie(act,name,value = '') {
+	name = config.cookie + name;
+	let result = '';
+	switch (act) {
+		case 'set':
+			let d = new Date(); d.setTime(d.getTime() + (365 * 24 * 3600 * 1000));
+			document.cookie = name + '=' + value + '; expires=' + d.toUTCString() + '; path=/; SameSite=None; Secure';
+			break;
+		case 'get':
+			let data = document.cookie.split('; ');
+			for (let x = 0; x < data.length; x++) {
+				let cookie = data[x].split('=');
+				if (cookie[0] === name) { result = cookie[1]; }
+			}
+			break;
+	}
+	return result;
 }
 
 function do_timer(e,act,controls = true) {
@@ -563,7 +648,7 @@ function do_timer(e,act,controls = true) {
 			mouse[x].clock = false;
 			set_controls(player,controls);
 			document.body.classList.remove('nocursor');
-		break;
+			break;
 	} }
 }
 
@@ -579,34 +664,6 @@ function timeify(val,max = 0) {
 		result = date.substr(8,2) + 'd' + date.substr(11,8);
 	}
 	return result;
-}
-
-function do_cookie(act,name,value = '') {
-	name = config.cookie + name;
-	let result = '';
-	switch (act) {
-		case 'set':
-			let d = new Date(); d.setTime(d.getTime() + (365 * 24 * 3600 * 1000));
-			document.cookie = name + '=' + value + '; expires=' + d.toUTCString() + '; path=/; SameSite=None; Secure';
-		break;
-		case 'get':
-			let data = document.cookie.split('; ');
-			for (let x = 0; x < data.length; x++) {
-				let cookie = data[x].split('=');
-				if (cookie[0] === name) { result = cookie[1]; }
-			}
-		break;
-	}
-	return result;
-}
-
-function page_load(item) {
-	let load = window.onload;
-	if (typeof load == 'function') {
-		window.onload = function() { if (load) { load(); } item(); };
-	} else {
-		window.onload = item;
-	}
 }
 
 function get_player_id(player) {

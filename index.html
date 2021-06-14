@@ -11,10 +11,10 @@
 
 		div.videoplayer { display: inline-block; margin: 2em; vertical-align: top; }
 
-		div#body > div:nth-of-type(1) { }
+		div#body > div:nth-of-type(1) { width: 640px; }
 		div#body > div:nth-of-type(2) { height: 360px; }
 		div#body > div:nth-of-type(3) { }
-		div#body > div:nth-of-type(4) { width: 650px; }
+		div#body > div:nth-of-type(4) { width: 400px; }
 
 	</style>
 	<script src="videoplayer.js"></script>
@@ -23,10 +23,10 @@
 
 <div id="body">
 
-	<div class="videoplayer" data-title="Video 1" data-autofocus="true"><video><source src="video1.mp4" type="video/mp4" /></video></div>
-	<div class="videoplayer"><video><source src="video2.mp4" type="video/mp4" /></video></div>
-	<div class="videoplayer" data-title=""><video><source src="video3.mp4" type="video/mp4" /></video></div>
-	<div class="videoplayer" data-title="Video 4"><video><source src="video4.mp4" type="video/mp4" /></video></div>
+	<div class="videoplayer" data-title="Sset to 640px width" data-autofocus="true" data-help="true"><video><source src="video1.mp4" type="video/mp4" /></video></div>
+	<div class="videoplayer" data-title="Set to 360px height" data-bgcolor="#000000"><video><source src="video2.mp4" type="video/mp4" /></video></div>
+	<div class="videoplayer" data-help="true"><video><source src="video3.mp4" type="video/mp4" /></video></div>
+	<div class="videoplayer" data-title="Set to 400px width"><video><source src="video4.mp4" type="video/mp4" /></video></div>
 
 </div>
 

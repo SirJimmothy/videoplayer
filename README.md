@@ -21,6 +21,7 @@ Argument | Description
 data-title="Video Title" | Title of the video. Appears at the top of the player
 data-autofocus="true" | Whether to automatically focus the video, allowing keyboard shortcuts to be used immediately
 data-autoplay="true" | Whether to automatically play the video upon page load. If the site is not trusted for autoplay, the video is muted and a second autoplay request sent
+data-bgcolor="#000000" | The background colour of the wrapper. Defaults to transparent
 
 ## Customisation:
 
@@ -45,4 +46,6 @@ By default, the video will be displayed at its native size, however to scale a v
 - If the video is square, either may be specified
 
 Depending on which dimension attribute is set, the script will automatically scale the other attribute of the video in proportion.
+
+*Note: regardless of all calculations, the wrapper div has a minimum width of 350px, which is needed to display all controls.*
 
