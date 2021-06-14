@@ -39,14 +39,14 @@ function load() {
 	let css_rules = [
 		'@font-face { font-family: "fixed"; src: url("inconsolata-regular.ttf"); }',
 
-		div_main + ' { z-index: 0; position: relative; overflow: visible; font-family: fixed, monospace; user-select: none; }',
+		div_main + ' { z-index: 0; position: relative; overflow: visible; min-width: 350px; font-family: fixed, monospace; user-select: none; }',
 
 		div_main + ' > video { width: 100%; height: 100%; }',
 
 		div_main + ' > div.overlay { z-index: 1; position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100px; height: 100px; margin: auto; border-radius: 100px; opacity: 0; filter: opacity(0%); text-align: center; color: #FFFFFF; background: url("icons.png") 0 0 no-repeat #666666; pointer-events: none; transition: opacity 0.1s linear 0s; }',
 		div_main + ' > div.overlay.visible { opacity: 0.75; filter: opacity(75%); transition-delay: 0s; }',
 
-		div_main + ' > div.controls { display: flex; flex-flow: row; position: absolute; bottom: 2px; left: 0; width: 100%; height: 30px; font-size: 12px; color: #FFFFFF; background-color: #333333; transition: all 0.1s linear 0s; }',
+		div_main + ' > div.controls { display: flex; flex-flow: row; position: absolute; bottom: 0; left: 0; width: 100%; height: 30px; font-size: 12px; color: #FFFFFF; background-color: #333333; transition: all 0.1s linear 0s; }',
 		div_main + '.hidden > div.controls { opacity: 0; filter: opacity(0%); transition-duration: 0.5s; }',
 
 		div_main + ' > div.controls > div { position: relative; flex: 0 0 auto; width: 30px; height: 30px; }',
@@ -62,7 +62,7 @@ function load() {
 
 		div_main + ' > div.controls > div.volume { background: url("icons.png") -60px -100px no-repeat; cursor: pointer; }',
 		div_main + ' > div.controls > div.volume.mute { background-position: -90px -100px; }',
-		div_main + ' > div.controls > div.vol_slider { top: 10px; margin: 0 0.5em 0 0.5em; width: 70px; height: 10px; border: 2px solid #222222; border-width: 0 2px; border-radius: 2em; background-color: #222222; cursor: grab; }',
+		div_main + ' > div.controls > div.vol_slider { top: 10px; margin: 0 1em 0 0.5em; width: 70px; height: 10px; border: 2px solid #222222; border-width: 0 2px; border-radius: 2em; background-color: #222222; cursor: grab; }',
 		div_main + ' > div.controls > div.vol_slider > span { display: block; position: absolute; top: -0.5em; left: -0.5em; width: 100%; height: 10px; border: 0.5em solid #333333; border-radius: 2em;  background-color: #999999; transition: width 0.1s linear 0s; content: ""; pointer-events: none; }',
 		div_main + ' > div.controls > div.vol_slider > span:before { position: absolute; top: -3px; right: -8px; width: 16px; height: 16px; border-radius: 100%; background-color: #EEEEEE; content: ""; }',
 
@@ -98,6 +98,14 @@ function load() {
 	let players = document.querySelectorAll('div.' + config.class);
 	for (let x = 0; x < players.length; x++) {
 		let video = players[x].childNodes[0];
+
+		// Set container size to match video ratio
+		let player_size = players[x].getBoundingClientRect();
+		if (players[x].style.width && video.videoWidth > video.videoHeight) { // Landscape video
+			players[x].style.height = video.videoHeight * (player_size.width / video.videoWidth) + 'px';
+		} else if (players[x].style.height) { // Vertical or square video
+			players[x].style.height = video.videoWidth * (player_size.height / video.videoHeight) + 'px';
+		}
 
 		let cookie_vol = parseFloat(do_cookie('get','volume'));
 		if (cookie_vol) { video.volume = cookie_vol; }
@@ -181,6 +189,14 @@ function load() {
 		// Give focus if requested
 		if (players[x].getAttribute('data-autofocus') === 'true') {
 			players[x].childNodes[0].focus();
+		}
+
+		// Autoplay if requested
+		if (players[x].getAttribute('data-autoplay') === 'true') {
+			players[x].childNodes[0].play().then().catch(() => {
+				set_volume(players[x],0);
+				players[x].childNodes[0].play().then();
+			});
 		}
 
 		// Update timers
@@ -448,7 +464,6 @@ function toggle_play(e) {
 		set_controls(player,true);
 		do_timer(e,'reset');
 	}
-	console.log(video);
 }
 
 function toggle_fullscreen(player) {
