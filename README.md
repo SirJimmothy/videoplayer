@@ -23,8 +23,9 @@ Argument | Description
 data-title="Video Title" | Title of the video. Appears at the top of the player
 data-autofocus="true" | Whether to automatically focus the video, allowing keyboard shortcuts to be used immediately
 data-autoplay="true" | Whether to automatically play the video upon page load. If the site is not trusted for autoplay, the video is muted and a second autoplay request sent
-data-bgcolor="#000000" | The background colour of the wrapper. Defaults to transparent
+data-autoloop="true" | Whether to automatically loop the video upon ending
 data-help="true" | Whether to display a help icon on the video to assist with keyboard controls
+data-bgcolor="#000000" | The background colour of the wrapper. Defaults to transparent
 
 ## Customisation:
 

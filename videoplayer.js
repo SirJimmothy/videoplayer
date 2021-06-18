@@ -200,7 +200,11 @@ function load() {
 		} }
 		if (menu.childNodes.length) { players[x].appendChild(menu); }
 
-		// Video Title if specified
+////////////////////////
+//   Optional Extras  //
+////////////////////////
+
+		// Video Title
 		let video_title = players[x].getAttribute('data-title');
 		if (video_title) {
 			let title = document.createElement('DIV');
@@ -209,7 +213,7 @@ function load() {
 			players[x].appendChild(title);
 		}
 
-		// Help icon, if specified
+		// Help icon
 		if (players[x].getAttribute('data-help') === 'true') {
 			let icon_help = document.createElement('DIV');
 			icon_help.className = 'help';
@@ -225,12 +229,12 @@ function load() {
 			players[x].appendChild(icon_help);
 		}
 
-		// Give focus if specified
+		// Give focus
 		if (players[x].getAttribute('data-autofocus') === 'true') {
 			players[x].childNodes[0].focus();
 		}
 
-		// Autoplay if specified
+		// Autoplay
 		if (players[x].getAttribute('data-autoplay') === 'true') {
 			players[x].childNodes[0].play().then().catch(() => {
 				set_volume(players[x],0);
@@ -238,9 +242,14 @@ function load() {
 			});
 		}
 
-		// Set background if specified
+		// Set background
 		if (players[x].getAttribute('data-bgcolor')) {
 			players[x].style.backgroundColor = players[x].getAttribute('data-bgcolor');
+		}
+
+		// Set loop
+		if (players[x].getAttribute('data-autoloop') === 'true') {
+			players[x].childNodes[0].loop = true;
 		}
 
 		// Timers
