@@ -425,6 +425,11 @@ function keydown(e) {
 
 	if (player) {
 
+		if (player.getAttribute('data-keypress') === 'true') {
+			do_timer(e,'reset');
+			do_timer(e,'start',true);
+		}
+
 		let video = player.childNodes[0];
 		let show;
 		let current = video.currentTime;
