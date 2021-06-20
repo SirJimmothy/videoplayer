@@ -67,16 +67,17 @@ function load() {
 
 		div_main + ' > div.controls > div.time1 { width: auto; padding-top: 0.65em; background: none; }',
 		div_main + ' > div.controls > div.time2 { width: auto; padding-top: 0.65em; background: none; }',
-		div_main + ' > div.controls > div.slider { flex-grow: 1; margin: 0 0.5em; height: 30px; border: 2px solid #222222; border-width: 0 2px; background-color: #555555; cursor: pointer; }',
+		div_main + ' > div.controls > div.slider { flex-grow: 1; margin: 0 0.5em; height: 30px; border: 2px solid #222222; border-width: 0 2px; background-color: #444444; cursor: pointer; }',
+		div_main + ' > div.controls > div.slider > div:nth-of-type(1) { display: block; position: absolute; top: 0; left: 2px; width: 0; height: 30px; background-color: #555555; transition: width 0.1s linear 0s; content: ""; pointer-events: none; }',
 		div_main + ' > div.controls > div.slider > span { display: block; position: absolute; top: 0; left: 2px; width: 0; height: 30px; background-color: #999999; transition: width 0.1s linear 0s; content: ""; pointer-events: none; }',
-		div_main + ' > div.controls > div.slider > div { display: none; position: absolute; top: -25px; left: 0; padding: 1px 5px; border: 1px solid #666666; border-radius: 5px; background-color: #333333; }',
-		div_main + ' > div.controls > div.slider:hover > div { display: block; }',
+		div_main + ' > div.controls > div.slider > div:nth-of-type(2) { display: none; position: absolute; top: -25px; left: 0; padding: 1px 5px; border: 1px solid #666666; border-radius: 5px; background-color: #333333; }',
+		div_main + ' > div.controls > div.slider:hover > div:nth-of-type(2) { display: block; }',
 
 		div_main + ' > div.controls > div.volume { background: var(--' + config.class +'_icons) -60px -100px no-repeat; cursor: pointer; }',
 		div_main + ' > div.controls > div.volume.mute { background-position: -90px -100px; }',
-		div_main + ' > div.controls > div.vol_slider { top: 10px; margin: 0 1em 0 0.5em; width: 70px; height: 10px; border: 2px solid #222222; border-width: 0 2px; border-radius: 2em; background-color: #222222; cursor: grab; }',
+		div_main + ' > div.controls > div.vol_slider { top: 10px; margin: 0 1em 0 0.5em; width: 70px; height: 10px; border: 2px solid #222222; border-width: 0 2px; border-radius: 2em; background-color: #222222; cursor: pointer; }',
 		div_main + ' > div.controls > div.vol_slider > span { display: block; position: absolute; top: -0.5em; left: -0.5em; width: 100%; height: 10px; border: 0.5em solid #333333; border-radius: 2em;  background-color: #999999; transition: width 0.1s linear 0s; content: ""; pointer-events: none; }',
-		div_main + ' > div.controls > div.vol_slider > span:before { position: absolute; top: -3px; right: -8px; width: 16px; height: 16px; border-radius: 100%; background-color: #EEEEEE; content: ""; }',
+		//div_main + ' > div.controls > div.vol_slider > span:before { position: absolute; top: -3px; right: -8px; width: 16px; height: 16px; border-radius: 100%; background-color: #EEEEEE; content: ""; }',
 
 		div_main + ' > div.controls > div.full { background: var(--' + config.class +'_icons) -120px -100px no-repeat; cursor: pointer; }',
 		div_main + ':fullscreen > div.controls > div.full { background-position: -150px -100px; }',
@@ -174,6 +175,7 @@ function load() {
 				control.innerHTML = timeify(video.duration);
 			}
 			if (config.controls[x] === 'slider') {
+				control.appendChild(document.createElement('DIV'));
 				control.appendChild(document.createElement('SPAN'));
 				let div = document.createElement('DIV');
 				div.innerHTML = timeify(0,video.duration);
@@ -237,7 +239,7 @@ function load() {
 		// Autoplay
 		if (players[x].getAttribute('data-autoplay') === 'true') {
 			players[x].childNodes[0].play().then().catch(() => {
-				set_volume(players[x],0);
+				toggle_mute(players[x]);
 				players[x].childNodes[0].play().then();
 			});
 		}
@@ -260,7 +262,8 @@ function load() {
 
 			let slider = players[x].childNodes[2].childNodes[page.elements['slider']];
 			let size = slider.getBoundingClientRect();
-			slider.childNodes[0].style.width = ((size.width - 8) / video.duration) * video.currentTime + 'px';
+			slider.childNodes[0].style.width = ((size.width - 8) / video.duration) * video.buffered.end((video.buffered.length - 1)) + 'px';
+			slider.childNodes[1].style.width = ((size.width - 8) / video.duration) * video.currentTime + 'px';
 
 			let volume = players[x].childNodes[2].childNodes[page.elements['volume']];
 			if (!video.volume || video.muted) {
@@ -271,7 +274,7 @@ function load() {
 
 			let vol_slider = players[x].childNodes[2].childNodes[page.elements['vol_slider']];
 			if (video.muted) {
-				vol_slider.childNodes[0].style.width = 0;
+				vol_slider.childNodes[0].style.width = '0';
 			} else {
 				size = vol_slider.getBoundingClientRect();
 				vol_slider.childNodes[0].style.width = ((size.width - 4) * video.volume) + 'px';
@@ -385,10 +388,10 @@ function mousemove(e) {
 
 			// Update slider hover time
 			if (in_array('slider',target.classList)) {
-				let size = target.childNodes[1].getBoundingClientRect();
+				let size = target.childNodes[2].getBoundingClientRect();
 				let data = set_time(player,e.pageX,true);
-				target.childNodes[1].style.left = data[0] - (size.width / 2) + 'px';
-				target.childNodes[1].innerHTML = timeify(data[1],video.duration);
+				target.childNodes[2].style.left = data[0] - (size.width / 2) + 'px';
+				target.childNodes[2].innerHTML = timeify(data[1],video.duration);
 			}
 
 		}
@@ -420,6 +423,7 @@ function dblclick(e) {
 function keydown(e) {
 	let target = e.target;
 	let keyid = e.which;
+	let key = e.key;
 	let player = get_player(target);
 	downkeys[keyid] = true;
 
@@ -489,6 +493,12 @@ function keydown(e) {
 			video.volume = video.volume.toFixed(2);
 			if (show) { overlay(show,player); }
 		}
+
+		// Numbered jumps
+		if (in_array(key,['0','1','2','3','4','5','6','7','8','9'])) {
+			video.currentTime = (video.duration / 10) * parseInt(key);
+		}
+
 	} // if (player) {
 
 }
@@ -666,15 +676,6 @@ function timeify(val,max = 0) {
 		result = date.substr(8,2) + 'd' + date.substr(11,8);
 	}
 	return result;
-}
-
-function get_player_id(player) {
-	let players = document.querySelectorAll('div.' + config.class);
-	let index;
-	for (let x = 0; x < players.length; x++) {
-		if (players[x] === player) { index = x; break; }
-	}
-	return index;
 }
 
 function overlay(choice,player) {
