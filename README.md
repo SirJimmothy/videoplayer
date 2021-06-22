@@ -12,10 +12,12 @@ Simply include the JavaScript file as follows:
 and wrap video elements (all arguments removed)  as follows:
 
 ```html
-<div class="videoplayer"><video><source src="video1.mp4" type="video/mp4" /></video></div>
+<div class="videoplayer"><video><source src="media/video1.mp4" type="video/mp4" /></video></div>
 ```
 
-All inages and icons are encoded within the **embeds.js** file; if this is not included, then the local files **icons.png** and **inconsolata-regular.ttf** should be downloaded and stored in the same directory.
+It's important that there is no whitespace before the start of the <video> tag. This is a JavaScript compatibility issue and may be resolved in the future.
+
+All inages and icons are encoded within the **embeds.js** file; if this is not included, then the local files **icons.png** and **fixed.ttf** should be downloaded and stored in the same directory.
 
 The following data attributes may also be added for additional functionality:
 

@@ -49,7 +49,7 @@ function load() {
 	let css_rules = [
 
 		div_main + ' { --' + config.class +'_icons: url("icons.png")',
-		'@font-face { font-family: "fixed"; src: url("inconsolata-regular.ttf"); }',
+		'@font-face { font-family: "fixed"; src: url("fixed.ttf"); }',
 
 		div_main + ' { z-index: 0; position: relative; overflow: visible; min-width: 350px; font-family: fixed_embed, fixed, monospace; user-select: none; }',
 
