@@ -80,7 +80,7 @@ function load() {
 		div_main + ' > div.controls > div.volume.mute { background-position: -90px -100px; }',
 		div_main + ' > div.controls > div.vol_slider { top: 10px; margin: 0 1em 0 0.5em; width: 70px; height: 10px; border: 2px solid #222222; border-width: 0 2px; border-radius: 2em; background-color: #222222; cursor: pointer; }',
 		div_main + ' > div.controls > div.vol_slider > span { display: block; position: absolute; top: -0.5em; left: -0.5em; width: 100%; height: 10px; border: 0.5em solid #333333; border-radius: 2em;  background-color: #999999; transition: width 0.1s linear 0s; content: ""; pointer-events: none; }',
-		//div_main + ' > div.controls > div.vol_slider > span:before { position: absolute; top: -3px; right: -8px; width: 16px; height: 16px; border-radius: 100%; background-color: #EEEEEE; content: ""; }',
+		div_main + ' > div.controls > div.vol_slider > span > div { position: absolute; top: -3px; right: -8px; width: 16px; height: 16px; border-radius: 100%; background-color: #EEEEEE; content: ""; pointer-events: auto; }',
 
 		// Fullscreen control
 		div_main + ' > div.controls > div.full { background: var(--' + config.class +'_icons) -120px -100px no-repeat; cursor: pointer; }',
@@ -209,7 +209,11 @@ function load() {
 				control.appendChild(div);
 			}
 			if (config.controls[x] === 'vol_slider') {
-				control.appendChild(document.createElement('SPAN'));
+				let span = document.createElement('SPAN');
+				let div = document.createElement('DIV');
+				div.className = 'vol_grabber';
+				span.appendChild(div);
+				control.appendChild(span);
 			}
 			if (config.controls[x] === 'full') {
 				control.setAttribute('title','Toggle Fullscreen');
@@ -286,12 +290,13 @@ function load() {
 
 			update_menu(players[x]);
 
+			let size;
 			if (video.duration) {
 				players[x].childNodes[2].childNodes[page.elements['time1']].innerHTML = timeify(video.currentTime,video.duration);
 				players[x].childNodes[2].childNodes[page.elements['time2']].innerHTML = timeify(video.duration);
 
 				let slider = players[x].childNodes[2].childNodes[page.elements['slider']];
-				let size = slider.getBoundingClientRect();
+				size = slider.getBoundingClientRect();
 				slider.childNodes[0].style.width = ((size.width - 8) / video.duration) * video.buffered.end((video.buffered.length - 1)) + 'px';
 				slider.childNodes[1].style.width = ((size.width - 8) / video.duration) * video.currentTime + 'px';
 			}
@@ -346,7 +351,7 @@ function mousedown(e) {
 				if (target === video) { hide_menu(player); }
 				if (target === video || in_array('play',target.classList)) { toggle_play(e); }
 				if (in_array('slider',target.classList)) { set_time(player,e.pageX); }
-				if (in_array('vol_slider',target.classList)) { set_volume(player,e.pageX); }
+				if (in_array(target.className,['vol_slider','vol_grabber'])) { set_volume(player,e.pageX); }
 				if (in_array('volume',target.classList)) { toggle_mute(player); }
 				if (in_array('full',target.classList)) { toggle_fullscreen(player); }
 
@@ -398,7 +403,7 @@ function mousemove(e) {
 	let player = get_player(target);
 	let video = player.childNodes[0];
 	if (mouse.down && player && target.className === 'slider') { set_time(player,e.pageX); }
-	if (mouse.down && player && target.className === 'vol_slider') { set_volume(player,e.pageX); }
+	if (mouse.down && player && in_array(target.className,['vol_slider','vol_grabber'])) { set_volume(player,e.pageX); }
 	document.body.classList.remove('nocursor');
 
 	if (player) {
