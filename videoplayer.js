@@ -56,13 +56,28 @@ function load() {
 		div_main + ' > video { width: 100%; height: 100%; margin: 0; padding: 0; border: 0; outline: 0; }',
 
 		// Main overlay
-		div_main + ' > div.overlay { z-index: 1; position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100px; height: 100px; margin: auto; border-radius: 100px; opacity: 0; filter: opacity(0%); text-align: center; color: #FFFFFF; background: var(--' + config.class +'_icons) 0 0 no-repeat #666666; pointer-events: none; transition: opacity 0.1s linear 0s; }',
-		div_main + ' > div.overlay.visible { opacity: 0.75; filter: opacity(75%); transition-delay: 0s; }',
+		//div_main + ' > div.overlay { z-index: 1; position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100px; height: 100px; margin: auto; border-radius: 100px; opacity: 0; filter: opacity(0%); text-align: center; color: #FFFFFF; background: var(--' + config.class +'_icons) 0 0 no-repeat #666666; pointer-events: none; transition: opacity 0.1s linear 0s; }',
+		//div_main + ' > div.overlay.visible { opacity: 0.75; filter: opacity(75%); transition-duration: 0s; }',
 
-		div_main + ' > div.controls { display: flex; flex-flow: row; position: absolute; bottom: 0; left: 0; width: 100%; height: 30px; font-size: 12px; color: #FFFFFF; background-color: #333333; transition: all 0.1s linear 0s; }',
-		div_main + '.hidden > div.controls { opacity: 0; filter: opacity(0%); transition-duration: 0.5s; }',
+		div_main + ' > div.overlay { z-index: 1; position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100px; height: 100px; margin: auto; pointer-events: none; }',
+		div_main + ' > div.overlay.visible { }',
+		div_main + ' > div.overlay.visible.hiding { }',
+
+		div_main + ' > div.overlay > span { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; filter: opacity(0%); transition: all 0.25s linear; }',
+		div_main + ' > div.overlay > span:nth-of-type(1) { width: 0; height: 0; top: 50%; left: 50%; border-radius: 100px; background-color: #333333; }',
+		div_main + ' > div.overlay > span:nth-of-type(2) { background: var(--' + config.class +'_icons) 0 0 no-repeat; transition-property: opacity; }',
+
+		div_main + ' > div.overlay.visible > span:nth-of-type(1) { width: 100%; height: 100%; top: 0; left: 0; opacity: 1; filter: opacity(100%); }',
+		div_main + ' > div.overlay.visible > span:nth-of-type(2) { opacity: 1; filter: opacity(100%); }',
+
+		div_main + ' > div.overlay.visible.hiding > span { opacity: 0; filter: opacity(0%); }',
+		div_main + ' > div.overlay.visible.hiding > span:nth-of-type(1) { width: 150px; height: 150px; top: -25%; left: -25%; }',
+		div_main + ' > div.overlay.visible.hiding > span:nth-of-type(2) { }',
 
 		// Controls
+		div_main + ' > div.controls { display: flex; flex-flow: row; position: absolute; bottom: 0; left: 0; width: 100%; height: 30px; font-size: 12px; color: #FFFFFF; background-color: #333333; transition: all 0.25s linear 0s; }',
+		div_main + '.hidden > div.controls { opacity: 0; filter: opacity(0%); }',
+
 		div_main + ' > div.controls > div { position: relative; flex: 0 0 auto; width: 30px; height: 30px; }',
 		div_main + ' > div.controls > div.play { background: var(--' + config.class +'_icons) 0 -100px no-repeat; cursor: pointer; }',
 		div_main + ' > div.controls > div.play.pause { background-position: -30px -100px; }',
@@ -89,7 +104,6 @@ function load() {
 		// Context menu
 		div_main + ' > ul { display: none; position: absolute; top: 30px; left: 30px; list-style-type: none; margin: 0; padding: 0.25em; background-color: rgba(51,51,51,0.75); }',
 		div_main + ' > ul li { position: relative; margin: 0; padding: 0.25em 1em 0.25em 1.75em; text-align: left; color: #FFFFFF; cursor: pointer; }',
-		//div_main + ' > ul li:before { position: absolute; top: 9px; left: 0.5em; width: 0.5em; height: 0.5em; border: 1px solid #FFFFFF; border-radius: 1em; background: none; content: ""; }',
 		div_main + ' > ul li:before { position: absolute; top: -2px; left: 0; width: 30px; height: 30px; background: var(--' + config.class +'_icons) -210px -100px; content: none; }',
 		div_main + ' > ul li.on:before { content: ""; }',
 		div_main + ' > ul li:hover { background-color: #666666; }',
@@ -180,7 +194,8 @@ function load() {
 		// Information overlay (play, pause etc)
 		let overlay = document.createElement('DIV');
 		overlay.className = 'overlay';
-		overlay.innerHTML = '';
+		overlay.appendChild(document.createElement('SPAN'));
+		overlay.appendChild(document.createElement('SPAN'));
 		players[x].appendChild(overlay);
 
 		// Controls bar
@@ -727,14 +742,13 @@ function overlay(choice,player) {
 		'0.25x','0.5x','0.75x','1x','1.25x','1.5x','1.75x','2x'
 	];
 	for (let x = 0; x < choices.length; x++) {
-		if (choice === choices[x]) {
-			value = (x * -100) + 'px  0px';
-		}
+		if (choice === choices[x]) { value = (x * -100) + 'px  0px'; }
 	}
 
+	overlay.childNodes[1].style.backgroundPosition = value;
 	overlay.classList.add('visible');
-	overlay.style.backgroundPosition = value;
-	setTimeout(() => { overlay.classList.remove('visible'); },250);
+	setTimeout(() => { overlay.classList.add('hiding'); },250);
+	setTimeout(() => { overlay.classList.remove('visible','hiding'); },500);
 }
 
 function show_menu(e) {
