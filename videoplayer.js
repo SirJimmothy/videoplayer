@@ -84,9 +84,13 @@ function load() {
 
 		div_main + ' > div.controls > div.time1 { width: auto; padding-top: 0.65em; background: none; }',
 		div_main + ' > div.controls > div.time2 { width: auto; padding-top: 0.65em; background: none; }',
+
+		// Slider
 		div_main + ' > div.controls > div.slider { flex-grow: 1; margin: 0 0.5em; height: 30px; border: 2px solid #222222; border-width: 0 2px; background-color: #444444; cursor: pointer; }',
-		div_main + ' > div.controls > div.slider > div:nth-of-type(1) { display: block; position: absolute; top: 0; left: 2px; width: 0; height: 30px; background-color: #555555; transition: width 0.1s linear 0s; content: ""; pointer-events: none; }',
-		div_main + ' > div.controls > div.slider > span { display: block; position: absolute; top: 0; left: 2px; width: 0; height: 30px; background-color: #999999; transition: width 0.1s linear 0s; content: ""; pointer-events: none; }',
+		div_main + ' > div.controls > div.slider > div:nth-of-type(1) { display: block; position: absolute; top: 0; left: 2px; width: 0; height: 30px; pointer-events: none; }', /* Buffer Indicators */
+		div_main + ' > div.controls > div.slider > div:nth-of-type(1) > div { position: absolute; top: 0; left: 0; width: 0; height: 30px; background-color: #555555; transition: width 0.1s linear 0s; }',
+
+		div_main + ' > div.controls > div.slider > span { display: block; position: absolute; top: 0; left: 2px; width: 0; height: 30px; background-color: #999999; transition: width 0.1s linear 0s; content: ""; opacity: 0.75; filter: opacity(75%); pointer-events: none; }',
 		div_main + ' > div.controls > div.slider > div:nth-of-type(2) { display: none; position: absolute; top: -25px; left: 0; padding: 1px 5px; border: 1px solid #666666; border-radius: 5px; background-color: #333333; }',
 		div_main + ' > div.controls > div.slider:hover > div:nth-of-type(2) { display: block; }',
 
@@ -311,9 +315,18 @@ function load() {
 				players[x].childNodes[2].childNodes[page.elements['time2']].innerHTML = timeify(video.duration);
 
 				let slider = players[x].childNodes[2].childNodes[page.elements['slider']];
-				size = slider.getBoundingClientRect();
-				slider.childNodes[0].style.width = ((size.width - 8) / video.duration) * video.buffered.end((video.buffered.length - 1)) + 'px';
-				slider.childNodes[1].style.width = ((size.width - 8) / video.duration) * video.currentTime + 'px';
+				size = slider.getBoundingClientRect().width - 8;
+				slider.childNodes[1].style.width = (size / video.duration) * video.currentTime + 'px';
+
+				// Show buffered areas
+				while (slider.childNodes[0].childNodes.length) { slider.childNodes[0].removeChild(slider.childNodes[0].childNodes[0]); }
+				let buffers = video.buffered;
+				for (let y = 0; y < buffers.length; y++) {
+					let bar = document.createElement('DIV');
+					bar.style.left = (size / video.duration) * video.buffered.start(y) + 'px';
+					bar.style.width = (size / video.duration) * (video.buffered.end(y) - video.buffered.start(y)) + 'px';
+					slider.childNodes[0].appendChild(bar);
+				}
 			}
 
 			let volume = players[x].childNodes[2].childNodes[page.elements['volume']];
@@ -327,8 +340,8 @@ function load() {
 			if (video.muted) {
 				vol_slider.childNodes[0].style.width = '0';
 			} else {
-				size = vol_slider.getBoundingClientRect();
-				vol_slider.childNodes[0].style.width = ((size.width - 4) * video.volume) + 'px';
+				size = vol_slider.getBoundingClientRect().width - 4;
+				vol_slider.childNodes[0].style.width = (size * video.volume) + 'px';
 			}
 
 			if (video.paused && video.currentTime === video.duration) {
