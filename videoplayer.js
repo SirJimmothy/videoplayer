@@ -323,8 +323,8 @@ function load() {
 				let buffers = video.buffered;
 				for (let y = 0; y < buffers.length; y++) {
 					let bar = document.createElement('DIV');
-					bar.style.left = (size / video.duration) * video.buffered.start(y) + 'px';
-					bar.style.width = (size / video.duration) * (video.buffered.end(y) - video.buffered.start(y)) + 'px';
+					bar.style.left = (size / video.duration) * buffers.start(y) + 'px';
+					bar.style.width = (size / video.duration) * (buffers.end(y) - buffers.start(y)) + 'px';
 					slider.childNodes[0].appendChild(bar);
 				}
 			}
