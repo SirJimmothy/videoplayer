@@ -90,7 +90,7 @@ function load() {
 		div_main + ' > div.controls > div.slider > div:nth-of-type(1) { display: block; position: absolute; top: 0; left: 2px; width: 0; height: 30px; pointer-events: none; }', /* Buffer Indicators */
 		div_main + ' > div.controls > div.slider > div:nth-of-type(1) > div { position: absolute; top: 0; left: 0; width: 0; height: 30px; background-color: #555555; transition: width 0.1s linear 0s; }',
 
-		div_main + ' > div.controls > div.slider > span { display: block; position: absolute; top: 0; left: 2px; width: 0; height: 30px; background-color: #999999; transition: width 0.1s linear 0s; content: ""; opacity: 0.75; filter: opacity(75%); pointer-events: none; }',
+		div_main + ' > div.controls > div.slider > span { display: block; position: absolute; top: 0; left: 2px; width: 0; height: 30px; background-color: #999999; transition: width 0.1s linear 0s; content: ""; opacity: 0.5; filter: opacity(50%); pointer-events: none; }',
 		div_main + ' > div.controls > div.slider > div:nth-of-type(2) { display: none; position: absolute; top: -25px; left: 0; padding: 1px 5px; border: 1px solid #666666; border-radius: 5px; background-color: #333333; }',
 		div_main + ' > div.controls > div.slider:hover > div:nth-of-type(2) { display: block; }',
 
